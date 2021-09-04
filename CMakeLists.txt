@@ -5,6 +5,10 @@ project(musl_libc VERSION 1.2.2)
 set(TARGET_ARCH "x86_64")
 enable_language(ASM)
 
+set(LIBC_INCLUDE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}/include
+)
 
 file(GLOB_RECURSE LIBC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
@@ -14,10 +18,10 @@ file(GLOB_RECURSE LIBC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/*.S
 )
 
-set(CMAKE_C_FLAGS "-ffreestanding -nostdinc -Os -fPIC -fexcess-precision=standard \
+set(CMAKE_C_FLAGS "-ffreestanding -nostdinc -Os -fPIC \
     -frounding-math -Wa,--noexecstack -pipe -fomit-frame-pointer -fno-unwind-tables \
     -fno-asynchronous-unwind-tables -ffunction-sections -fdata-sections \
-    -Wno-pointer-to-int-cast")
+    -Wno-shift-op-parentheses -Wno-unknown-pragmas")
 
 add_library(musl STATIC
     ${LIBC_SOURCES}
@@ -34,7 +38,7 @@ target_compile_definitions(musl PRIVATE
     VERSION="${CMAKE_PROJECT_VERSION}"
     _XOPEN_SOURCE=700
 )
-add_dependencies(musl alltypes.h syscall.h)
+add_dependencies(musl alltypes.h)
 
 add_custom_target(alltypes.h
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/include/bits
@@ -46,15 +50,4 @@ add_custom_target(alltypes.h
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/include/bits/alltypes.h
     SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/alltypes.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/include/alltypes.h.in
-)
-
-add_custom_target(syscall.h
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/include/bits
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/syscall.h.in
-        ${CMAKE_CURRENT_BINARY_DIR}/include/bits/syscall.h
-    COMMAND sed -n -e s/__NR_/SYS_/p < ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/syscall.h.in
-        >> ${CMAKE_CURRENT_BINARY_DIR}/include/bits/syscall.h
-    COMMENT include/bits/syscall.h
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/include/bits/syscall.h
-    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/syscall.h.in
 )
