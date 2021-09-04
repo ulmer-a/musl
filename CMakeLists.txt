@@ -21,7 +21,8 @@ file(GLOB_RECURSE LIBC_SOURCES
 set(CMAKE_C_FLAGS "-ffreestanding -nostdinc -Os -fPIC \
     -frounding-math -Wa,--noexecstack -pipe -fomit-frame-pointer -fno-unwind-tables \
     -fno-asynchronous-unwind-tables -ffunction-sections -fdata-sections \
-    -Wno-shift-op-parentheses -Wno-unknown-pragmas")
+    -Wno-shift-op-parentheses -Wno-unknown-pragmas -Wno-parentheses -Wno-string-plus-int \
+    -Wno-ignored-attributes")
 
 add_library(musl STATIC
     ${LIBC_SOURCES}
