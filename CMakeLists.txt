@@ -26,7 +26,6 @@ set(CMAKE_C_FLAGS "-ffreestanding -nostdinc -Os -fPIC \
 
 add_library(musl STATIC
     ${LIBC_SOURCES}
-    ${CMAKE_CURRENT_BINARY_DIR}/include/bits/alltypes.h
 )
 target_include_directories(musl PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/include
