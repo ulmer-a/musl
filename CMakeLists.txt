@@ -26,6 +26,7 @@ set(CMAKE_C_FLAGS "-ffreestanding -nostdinc -Os -fPIC \
 
 add_library(musl STATIC
     ${LIBC_SOURCES}
+    ${CMAKE_CURRENT_BINARY_DIR}/include/bits/alltypes.h
 )
 target_include_directories(musl PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/include
@@ -38,17 +39,4 @@ target_include_directories(musl PRIVATE
 target_compile_definitions(musl PRIVATE
     VERSION="${CMAKE_PROJECT_VERSION}"
     _XOPEN_SOURCE=700
-)
-add_dependencies(musl alltypes.h)
-
-add_custom_target(alltypes.h
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/include/bits
-    COMMAND sed -f ${CMAKE_CURRENT_SOURCE_DIR}/tools/mkalltypes.sed
-        ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/alltypes.h.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/alltypes.h.in
-        > ${CMAKE_CURRENT_BINARY_DIR}/include/bits/alltypes.h
-    COMMENT include/bits/alltypes.h
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/include/bits/alltypes.h
-    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/arch/${TARGET_ARCH}/bits/alltypes.h.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/alltypes.h.in
 )
